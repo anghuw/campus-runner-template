@@ -1,8 +1,21 @@
 import { create } from 'zustand';
 import { User, Order, Conversation, Notification, Address, Message } from '../types';
 import { currentUser, orders as mockOrders, conversations as mockConversations, notifications as mockNotifications, addresses as mockAddresses } from '../data/mockData';
+import { isApiMode } from '../api/client';
+import * as taskApi from '../api/tasks';
+import * as authApi from '../api/auth';
 
-interface AppState {
+interface AuthState {
+  token: string | null;
+  authUser: { id: string; phone: string; nickname: string; studentId?: string } | null;
+  isLoggedIn: boolean;
+  login: (phone: string, password: string) => Promise<void>;
+  register: (phone: string, nickname: string, password: string, studentId?: string) => Promise<void>;
+  logout: () => void;
+  loadUser: () => Promise<void>;
+}
+
+interface AppState extends AuthState {
   user: User;
   orders: Order[];
   conversations: Conversation[];
@@ -10,7 +23,8 @@ interface AppState {
   addresses: Address[];
   messages: Record<string, Message[]>;
   activeTab: string;
-  isLoggedIn: boolean;
+  loading: boolean;
+  error: string | null;
 
   setActiveTab: (tab: string) => void;
   updateOrderStatus: (orderId: string, status: Order['status']) => void;
@@ -23,9 +37,67 @@ interface AppState {
   updateAddress: (address: Address) => void;
   deleteAddress: (id: string) => void;
   setDefaultAddress: (id: string) => void;
+
+  // API mode
+  fetchTasks: () => Promise<void>;
+  createTask: (data: any) => Promise<void>;
+  acceptTask: (taskId: string) => Promise<void>;
 }
 
-export const useStore = create<AppState>((set) => ({
+export const useStore = create<AppState>((set, get) => ({
+  // Auth
+  token: null,
+  authUser: null,
+  isLoggedIn: false,
+  loading: false,
+  error: null,
+
+  login: async (phone, password) => {
+    if (!isApiMode()) {
+      set({ isLoggedIn: true, authUser: { id: 'mock', phone, nickname: 'Mock用户' } });
+      return;
+    }
+    set({ loading: true, error: null });
+    try {
+      const res = await authApi.login({ phone, password });
+      set({ token: res.token, authUser: res.user, isLoggedIn: true, loading: false });
+    } catch (err: any) {
+      set({ error: err.message, loading: false });
+      throw err;
+    }
+  },
+
+  register: async (phone, nickname, password, studentId) => {
+    if (!isApiMode()) {
+      set({ isLoggedIn: true, authUser: { id: 'mock', phone, nickname } });
+      return;
+    }
+    set({ loading: true, error: null });
+    try {
+      const res = await authApi.register({ phone, nickname, password, studentId });
+      set({ token: res.token, authUser: res.user, isLoggedIn: true, loading: false });
+    } catch (err: any) {
+      set({ error: err.message, loading: false });
+      throw err;
+    }
+  },
+
+  logout: () => {
+    set({ token: null, authUser: null, isLoggedIn: false });
+  },
+
+  loadUser: async () => {
+    const { token } = get();
+    if (!token || !isApiMode()) return;
+    try {
+      const user = await authApi.getMe(token);
+      set({ authUser: user, isLoggedIn: true });
+    } catch {
+      set({ token: null, authUser: null, isLoggedIn: false });
+    }
+  },
+
+  // Data
   user: currentUser,
   orders: mockOrders,
   conversations: mockConversations,
@@ -33,7 +105,6 @@ export const useStore = create<AppState>((set) => ({
   addresses: mockAddresses,
   messages: {},
   activeTab: 'home',
-  isLoggedIn: true,
 
   setActiveTab: (tab) => set({ activeTab: tab }),
 
@@ -110,4 +181,68 @@ export const useStore = create<AppState>((set) => ({
         isDefault: a.id === id,
       })),
     })),
+
+  // API mode actions
+  fetchTasks: async () => {
+    if (!isApiMode()) return;
+    set({ loading: true });
+    try {
+      const tasks = await taskApi.getTasks();
+      // Map backend tasks to frontend Order type
+      const orders: Order[] = tasks.map((t: any) => ({
+        id: t.id,
+        orderNo: t.id.slice(0, 8),
+        type: t.type,
+        status: t.status,
+        title: t.title,
+        description: t.description || '',
+        pickupAddress: t.pickupLocation,
+        deliveryAddress: t.deliveryLocation,
+        pickupLocation: { latitude: 0, longitude: 0, address: t.pickupLocation },
+        deliveryLocation: { latitude: 0, longitude: 0, address: t.deliveryLocation },
+        reward: t.reward,
+        tip: 0,
+        distance: 0,
+        estimatedTime: 0,
+        items: [],
+        publisherId: t.publisherId,
+        publisherName: t.publisher?.nickname || '匿名',
+        publisherAvatar: '',
+        runnerId: t.runnerId,
+        runnerName: t.runner?.nickname,
+        createdAt: t.createdAt,
+        expiredAt: new Date(Date.now() + 3600000).toISOString(),
+        isUrgent: false,
+      }));
+      set({ orders, loading: false });
+    } catch (err: any) {
+      set({ error: err.message, loading: false });
+    }
+  },
+
+  createTask: async (data) => {
+    const { token } = get();
+    if (!isApiMode() || !token) return;
+    set({ loading: true });
+    try {
+      await taskApi.createTask(data, token);
+      // Refresh tasks
+      await get().fetchTasks();
+    } catch (err: any) {
+      set({ error: err.message, loading: false });
+      throw err;
+    }
+  },
+
+  acceptTask: async (taskId) => {
+    const { token } = get();
+    if (!isApiMode() || !token) return;
+    try {
+      await taskApi.acceptTask(taskId, token);
+      await get().fetchTasks();
+    } catch (err: any) {
+      set({ error: err.message });
+      throw err;
+    }
+  },
 }));

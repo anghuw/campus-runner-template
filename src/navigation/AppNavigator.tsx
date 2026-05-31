@@ -16,6 +16,7 @@ import ChatPage from '../pages/ChatPage';
 import RunnerPage from '../pages/RunnerPage';
 import SearchPage from '../pages/SearchPage';
 import RatingPage from '../pages/RatingPage';
+import LoginPage from '../pages/LoginPage';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -105,6 +106,7 @@ export default function AppNavigator() {
         <Stack.Screen name="Runner" component={RunnerPage} />
         <Stack.Screen name="Search" component={SearchPage} />
         <Stack.Screen name="Rating" component={RatingPage} />
+        <Stack.Screen name="Login" component={LoginPage} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -20,7 +20,7 @@ jobs:
       - run: npm run type-check
 
   backend:
-    name: Backend — Type Check
+    name: Backend — Type Check & Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -33,3 +33,19 @@ jobs:
         working-directory: server
       - run: npm run type-check
         working-directory: server
+      - name: Setup database
+        working-directory: server
+        run: |
+          cp .env.example .env
+          npm run db:push
+          npm run seed
+        env:
+          DATABASE_URL: "file:./test.db"
+      - name: Start server and run tests
+        working-directory: server
+        run: |
+          npm run dev &
+          sleep 3
+          npm test
+        env:
+          DATABASE_URL: "file:./test.db"

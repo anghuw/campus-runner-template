@@ -2,76 +2,73 @@
 
 A full-stack campus errands app starter — Expo React Native frontend + Express/Prisma backend.
 
-> **v0.2.0** — Backend starter with SQLite, JWT auth, and task CRUD API. Frontend still works in mock-data mode by default.
+> **v0.3.0** — Frontend can switch between mock mode and backend API mode. Backend has auth, task CRUD, and integration tests.
 
 ## What's Included
 
 ### Frontend (Expo React Native)
-- 10 screen pages with mock data
+- 10 screen pages (mock data by default, API mode optional)
+- Login and registration page
 - Bottom tab + stack navigation
 - Zustand state management
+- API client with automatic mock/API mode switch
 - TypeScript strict mode
-- Optional API client (connects to backend when configured)
 
 ### Backend (Express + Prisma)
 - Express + TypeScript server
 - Prisma ORM with SQLite (dev) / PostgreSQL (prod)
-- JWT authentication (register/login)
-- Task CRUD with full lifecycle (pending → accepted → picking → delivering → completed)
+- JWT authentication (register/login/me)
+- Task CRUD with lifecycle (pending → accepted → picking → delivering → completed)
 - Zod input validation
 - Seed script with demo data
-
-## Tech Stack
-
-| Layer | Frontend | Backend |
-|-------|----------|---------|
-| Framework | Expo SDK 56 + React Native 0.85 | Express 4 |
-| Language | TypeScript 6 | TypeScript 5 |
-| Navigation | React Navigation 7 | — |
-| State | Zustand 5 | — |
-| Database | — | Prisma + SQLite |
-| Auth | — | JWT + bcryptjs |
-| Validation | — | Zod |
+- Integration tests (21 assertions)
 
 ## Quick Start
 
-### 1. Backend
+### Option A: Mock Mode (no backend needed)
 
+```bash
+# Frontend only — uses built-in mock data
+npm install
+npm start
+```
+
+### Option B: Full-Stack Mode
+
+**Terminal 1 — Backend:**
 ```bash
 cd server
-
-# Install
 npm install
-
-# Setup database
 cp .env.example .env
 npm run db:push
-
-# Seed demo data (optional)
-npm run seed
-
-# Start dev server
-npm run dev
-# → http://localhost:3001
+npm run seed      # creates demo users and tasks
+npm run dev       # starts at http://localhost:3001
 ```
 
-### 2. Frontend (Mock Mode — default)
-
+**Terminal 2 — Frontend:**
 ```bash
 # In project root
+echo "EXPO_PUBLIC_API_BASE_URL=http://localhost:3001" > .env
 npm install
 npm start
-# → Uses mock data, no backend needed
 ```
 
-### 3. Frontend (API Mode)
+## Environment Variables
 
-```bash
-# Create .env file in project root
-echo "EXPO_PUBLIC_API_BASE_URL=http://localhost:3001" > .env
+### Frontend (`.env`)
 
-npm start
-# → Connects to backend API
+```env
+# Empty = mock mode (default)
+# Set URL = API mode
+EXPO_PUBLIC_API_BASE_URL=
+```
+
+### Backend (`server/.env`)
+
+```env
+PORT=3001
+DATABASE_URL="file:./dev.db"
+JWT_SECRET="change-this-in-production"
 ```
 
 ## API Endpoints
@@ -98,25 +95,40 @@ npm start
 | 13800000001 | 123456 | 小明 |
 | 13800000002 | 123456 | 小红 |
 
-## Environment Variables
+## Current Status
 
-### Frontend (`.env`)
+### ✅ Done
+- Frontend template with 10 screens and mock data
+- Login/registration page
+- Backend API with auth and task CRUD
+- Frontend API client with mock/API mode switch
+- HomePage fetches tasks from API in API mode
+- PublishPage creates tasks via API in API mode
+- Integration tests (21 assertions, all pass)
+- CI: frontend type-check + backend type-check + backend tests
 
-```env
-# Leave empty for mock mode (default)
-# Set to backend URL for API mode
-EXPO_PUBLIC_API_BASE_URL=
+### ❌ Not Yet Done
+- OrderDetailPage still uses mock data only
+- OrdersPage still uses mock data only
+- ProfilePage still uses mock data only
+- MessagesPage and ChatPage are UI only
+- No real-time chat
+- No push notifications
+- No map integration
+- No E2E tests
+- Not production-ready
+
+## Running Tests
+
+```bash
+# Start server first
+cd server
+npm run dev
+
+# In another terminal
+cd server
+npm test
 ```
-
-### Backend (`server/.env`)
-
-```env
-PORT=3001
-DATABASE_URL="file:./dev.db"
-JWT_SECRET="your-jwt-secret-change-me"
-```
-
-> ⚠️ Never commit `.env` files. Only `.env.example` files are tracked.
 
 ## Project Structure
 
@@ -124,63 +136,53 @@ JWT_SECRET="your-jwt-secret-change-me"
 campus-runner/
 ├── App.tsx                        # Frontend entry
 ├── src/
-│   ├── api/                       # API client (new in v0.2.0)
-│   │   ├── client.ts              # HTTP client with mock/API mode
-│   │   ├── tasks.ts               # Task API calls
-│   │   ├── auth.ts                # Auth API calls
+│   ├── api/                       # API client (mock/API switch)
+│   │   ├── client.ts              # HTTP client
+│   │   ├── tasks.ts               # Task API
+│   │   ├── auth.ts                # Auth API
 │   │   └── index.ts
+│   ├── pages/
+│   │   ├── HomePage.tsx           # ✅ Connected to API
+│   │   ├── PublishPage.tsx        # ✅ Connected to API
+│   │   ├── LoginPage.tsx          # ✅ Auth (mock + API)
+│   │   ├── OrdersPage.tsx         # Mock only
+│   │   ├── OrderDetailPage.tsx    # Mock only
+│   │   ├── ProfilePage.tsx        # Mock only
+│   │   └── ... (6 more pages)
+│   ├── stores/useStore.ts         # Zustand with API actions
 │   ├── data/mockData.ts           # Mock data
-│   ├── navigation/                # React Navigation
-│   ├── pages/                     # 10 screen pages
-│   ├── stores/                    # Zustand
-│   ├── types/                     # TypeScript types
-│   └── utils/                     # Helpers
-├── server/                        # Backend (new in v0.2.0)
-│   ├── prisma/schema.prisma       # Database schema
+│   └── ...
+├── server/
+│   ├── prisma/schema.prisma       # User, Task, Category
 │   ├── src/
 │   │   ├── index.ts               # Express server
 │   │   ├── routes/auth.ts         # Auth endpoints
 │   │   ├── routes/tasks.ts        # Task endpoints
 │   │   ├── middleware/auth.ts     # JWT middleware
-│   │   ├── utils/                 # Prisma client, helpers
-│   │   └── __tests__/             # Basic tests
-│   ├── seed.ts                    # Demo data seeder
-│   ├── .env.example               # Backend env template
-│   └── package.json
-├── docs/ROADMAP.md                # Development roadmap
-├── .github/                       # CI, issue templates, PR template
-├── CHANGELOG.md
-├── CONTRIBUTING.md
-├── SECURITY.md
-└── LICENSE
+│   │   └── __tests__/
+│   │       └── integration.test.ts # 21 assertions
+│   ├── seed.ts                    # Demo data
+│   └── .env.example
+├── docs/ROADMAP.md
+├── .github/workflows/ci.yml
+└── ...
 ```
 
-## Roadmap
+## Tech Stack
 
-See [docs/ROADMAP.md](docs/ROADMAP.md) for the full plan.
-
-**Done (v0.2.0):**
-- ✅ Frontend template with mock data
-- ✅ Backend API with auth and task CRUD
-- ✅ SQLite dev database with Prisma
-- ✅ Seed script with demo data
-- ✅ API client with mock/API mode switch
-- ✅ CI with type-check for both frontend and backend
-
-**Next:**
-- Connect frontend screens to backend API
-- Real-time chat (WebSocket)
-- Push notifications
-- Map integration
-- Unit and E2E tests
+| Layer | Frontend | Backend |
+|-------|----------|---------|
+| Framework | Expo SDK 56 + React Native 0.85 | Express 4 |
+| Language | TypeScript 6 | TypeScript 5 |
+| Navigation | React Navigation 7 | — |
+| State | Zustand 5 | — |
+| Database | — | Prisma + SQLite |
+| Auth | — | JWT + bcryptjs |
+| Validation | — | Zod |
 
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md).
-
-## Security
-
-See [SECURITY.md](SECURITY.md).
 
 ## License
 

@@ -13,6 +13,7 @@ import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useStore } from '../stores/useStore';
 import { generateOrderNo } from '../utils';
+import { isApiMode } from '../api/client';
 
 const orderTypes = [
   { id: 'express', name: '代取快递', icon: 'package', color: '#FF6B35' },
@@ -27,7 +28,7 @@ const quickRewards = [5, 8, 10, 15, 20];
 
 export default function PublishPage() {
   const navigation = useNavigation<any>();
-  const { addOrder, user, addresses } = useStore();
+  const { addOrder, user, addresses, createTask, isLoggedIn, token } = useStore();
   const [selectedType, setSelectedType] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -40,12 +41,42 @@ export default function PublishPage() {
 
   const defaultAddress = addresses.find((a) => a.isDefault);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!selectedType || !title || !pickupAddress || !deliveryAddress || !reward) {
       Alert.alert('提示', '请填写完整信息');
       return;
     }
 
+    // API mode: send to backend
+    if (isApiMode()) {
+      if (!isLoggedIn || !token) {
+        Alert.alert('提示', '请先登录', [
+          { text: '去登录', onPress: () => navigation.navigate('Login') },
+          { text: '取消' },
+        ]);
+        return;
+      }
+      try {
+        await createTask({
+          title,
+          description,
+          type: selectedType,
+          pickupLocation: pickupAddress,
+          deliveryLocation: deliveryAddress,
+          reward: Number(reward),
+          contactInfo: user.phone || '13800000000',
+        });
+        Alert.alert('发布成功', '您的跑腿需求已发布', [
+          { text: '查看订单', onPress: () => navigation.navigate('Orders') },
+          { text: '返回首页', onPress: () => navigation.navigate('Home') },
+        ]);
+      } catch (err: any) {
+        Alert.alert('发布失败', err.message || '请重试');
+      }
+      return;
+    }
+
+    // Mock mode
     const newOrder = {
       id: `order_${Date.now()}`,
       orderNo: generateOrderNo(),

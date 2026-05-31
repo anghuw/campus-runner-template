@@ -23,14 +23,15 @@ This document outlines the planned development roadmap for Campus Runner.
 - [x] Frontend API client with mock/API mode switch
 - [x] CI with type-check for frontend + backend
 
-## Phase 3: Connect Frontend to Backend (v0.3.0)
+## Phase 3: Connect Frontend to Backend (v0.3.0) ✅
 
-- [ ] Connect HomePage to `GET /api/tasks`
+- [x] Connect HomePage to `GET /api/tasks`
 - [ ] Connect TaskDetailPage to `GET /api/tasks/:id`
-- [ ] Connect PublishPage to `POST /api/tasks`
-- [ ] Connect auth screens to backend
-- [ ] Token storage with expo-secure-store
-- [ ] Loading and error states for API calls
+- [x] Connect PublishPage to `POST /api/tasks`
+- [x] Login/Registration page with API mode
+- [x] Auth token management in Zustand
+- [x] Integration tests for auth and tasks
+- [x] CI runs backend tests
 
 ## Phase 4: Real Order Flow (v0.4.0)
 

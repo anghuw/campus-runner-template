@@ -14,6 +14,7 @@ import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useStore } from '../stores/useStore';
 import { serviceCategories } from '../data/mockData';
+import { isApiMode } from '../api/client';
 import { formatDistance, formatPrice, getStatusColor, getStatusLabel, getOrderTypeLabel } from '../utils';
 
 const { width } = Dimensions.get('window');
@@ -96,15 +97,25 @@ const OrderCard = ({ order, onPress, onAccept }: { order: any; onPress: () => vo
 
 export default function HomePage() {
   const navigation = useNavigation<any>();
-  const { orders, user, acceptOrder } = useStore();
+  const { orders, user, acceptOrder, fetchTasks, isLoggedIn } = useStore();
   const [refreshing, setRefreshing] = React.useState(false);
+
+  // Fetch from API on mount if in API mode
+  React.useEffect(() => {
+    if (isApiMode()) {
+      fetchTasks();
+    }
+  }, []);
 
   const pendingOrders = orders.filter((o) => o.status === 'pending');
   const nearbyOrders = pendingOrders.slice(0, 3);
 
-  const onRefresh = React.useCallback(() => {
+  const onRefresh = React.useCallback(async () => {
     setRefreshing(true);
-    setTimeout(() => setRefreshing(false), 1000);
+    if (isApiMode()) {
+      await fetchTasks();
+    }
+    setRefreshing(false);
   }, []);
 
   const handleAccept = (orderId: string) => {
@@ -136,9 +147,15 @@ export default function HomePage() {
             >
               <Feather name="search" size={22} color="#333" />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.headerIcon}>
-              <Feather name="bell" size={22} color="#333" />
-              <View style={styles.notificationDot} />
+            <TouchableOpacity
+              style={styles.headerIcon}
+              onPress={() => {
+                if (!isLoggedIn) {
+                  navigation.navigate('Login');
+                }
+              }}
+            >
+              <Feather name={isLoggedIn ? 'user' : 'log-in'} size={22} color="#333" />
             </TouchableOpacity>
           </View>
         </View>
