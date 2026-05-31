@@ -1,8 +1,23 @@
 # 🏃 Campus Runner
 
+[![CI](https://github.com/anghuw/campus-runner-template/actions/workflows/ci.yml/badge.svg)](https://github.com/anghuw/campus-runner-template/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Release](https://img.shields.io/github/v/release/anghuw/campus-runner-template)](https://github.com/anghuw/campus-runner-template/releases)
+
 A full-stack campus errands app starter — Expo React Native frontend + Express/Prisma backend.
 
 > **v0.3.0** — Frontend can switch between mock mode and backend API mode. Backend has auth, task CRUD, and integration tests.
+
+## Why This Project Exists
+
+Building a campus errands or delivery app from scratch requires setting up authentication, database, API, navigation, state management, and UI — all at once. This project saves that setup time.
+
+It's designed for:
+- **Students** learning full-stack mobile development with a real, runnable project
+- **Developers** who want a starter template for campus service apps (errands, delivery,互助)
+- **Hackathon teams** who need a working full-stack prototype fast
+
+The codebase demonstrates modern patterns: Expo + React Native, Express + Prisma + SQLite, JWT auth, Zustand state management, and TypeScript throughout — with both mock data and real API modes.
 
 ## What's Included
 
@@ -179,6 +194,10 @@ campus-runner/
 | Database | — | Prisma + SQLite |
 | Auth | — | JWT + bcryptjs |
 | Validation | — | Zod |
+
+## Maintainer Status
+
+This project is currently maintained by the primary maintainer. Contributions, issues, and feedback are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) for how to get involved.
 
 ## Contributing
 
