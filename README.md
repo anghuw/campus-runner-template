@@ -1,122 +1,139 @@
 # 🏃 Campus Runner
 
-Open-source full-stack campus errands app template built with Expo React Native, Node.js, Express, Prisma and PostgreSQL.
+A React Native frontend template for a campus errands app, built with Expo.
 
-## 项目简介
+> **Note:** This is currently a **frontend template with mock data**. There is no backend, no authentication, and no real data persistence yet. See [Roadmap](docs/ROADMAP.md) for planned features.
 
-Campus Runner 是一个校园跑腿互助平台，帮助大学生发布和接取校园内的各种代办任务，如取快递、买饭、送文件等。
+## What's Included
 
-## 技术栈
+- 10 screen pages with realistic mock data
+- Bottom tab navigation + stack navigation
+- Zustand state management
+- TypeScript with strict mode
+- Ready-to-extend project structure
 
-| 层级 | 技术 |
-|------|------|
-| 前端框架 | Expo SDK 56 + React Native 0.85 |
-| 导航 | React Navigation 7 (Stack + Bottom Tabs) |
-| 状态管理 | Zustand 5 |
-| 语言 | TypeScript 6 |
-| 地图 | react-native-maps |
-| 动画 | react-native-reanimated |
-| 图标 | @expo/vector-icons (Feather) |
+## Tech Stack
 
-## 功能列表
+| Layer | Technology |
+|-------|------------|
+| Framework | Expo SDK 56 + React Native 0.85 |
+| Navigation | React Navigation 7 (Stack + Bottom Tabs) |
+| State | Zustand 5 |
+| Language | TypeScript 6 |
+| Icons | @expo/vector-icons (Feather) |
+| Dates | date-fns |
 
-- 🏠 **首页** — 任务列表浏览、搜索筛选
-- 📝 **发布任务** — 填写任务信息、取送地点、报酬
-- 📋 **订单管理** — 已发布 / 已接取订单列表
-- 💬 **消息** — 任务相关的聊天通讯
-- 👤 **个人中心** — 用户信息、历史订单、评价
-- ⭐ **评价系统** — 完成任务后互评
-- 🔍 **搜索** — 按关键词搜索任务
-- 🗺️ **地图** — 查看任务位置
+## Current Features
 
-## 本地运行
+| Feature | Status |
+|---------|--------|
+| Home page with task list & category filters | ✅ Mock data |
+| Search tasks by keyword | ✅ Mock data |
+| Publish a new task (form) | ✅ UI only |
+| Order list with tabs (published / accepted) | ✅ Mock data |
+| Order detail with status timeline | ✅ Mock data |
+| Chat page with message bubbles | ✅ UI only |
+| Messages list | ✅ Mock data |
+| User profile page | ✅ Mock data |
+| Runner profile page | ✅ Mock data |
+| Rating page with stars | ✅ UI only |
+| Backend API | ❌ Not yet |
+| Real authentication | ❌ Not yet |
+| Real data persistence | ❌ Not yet |
+| Map / location | ❌ Not yet |
+| Push notifications | ❌ Not yet |
 
-### 前置条件
+## Getting Started
+
+### Prerequisites
 
 - Node.js >= 18
-- npm 或 yarn
-- Expo CLI: `npm install -g expo-cli`
-- 手机安装 Expo Go App（或使用 Android Studio / Xcode 模拟器）
+- npm
+- [Expo Go](https://expo.dev/go) app on your phone (or Android Studio / Xcode for simulators)
 
-### 启动步骤
+### Installation
 
 ```bash
-# 1. 克隆仓库
-git clone https://github.com/YOUR_USERNAME/campus-runner-template.git
+# Clone the repo
+git clone https://github.com/anghuw/campus-runner-template.git
 cd campus-runner-template
 
-# 2. 安装依赖
+# Install dependencies
 npm install
 
-# 3. 启动开发服务器
+# Start the dev server
 npm start
-
-# 4. 用 Expo Go 扫码，或按 a 启动 Android 模拟器
 ```
 
-### 构建 APK
+Then scan the QR code with Expo Go, or press `a` for Android simulator / `i` for iOS simulator.
+
+### Type Checking
 
 ```bash
-# 安装 EAS CLI
-npm install -g eas-cli
-
-# 登录 Expo 账号
-eas login
-
-# 构建 Android APK（内测用）
-eas build --platform android --profile preview
+npm run type-check
 ```
 
-## 环境变量
-
-本项目第一版使用本地 mock 数据，无需配置环境变量。
-
-如需接入后端 API，创建 `.env` 文件：
-
-```env
-EXPO_PUBLIC_API_BASE_URL=http://your-server:3001
-```
-
-> ⚠️ `.env` 文件已被 `.gitignore` 排除，不会提交到仓库。
-
-## 项目结构
+## Project Structure
 
 ```
 campus-runner/
-├── App.tsx                    # 应用入口
-├── index.ts                   # 注册入口
-├── app.json                   # Expo 配置
-├── eas.json                   # EAS Build 配置
-├── tsconfig.json              # TypeScript 配置
-├── package.json               # 依赖和脚本
-├── assets/                    # 图标、启动图资源
+├── App.tsx                       # App entry point
+├── index.ts                      # Expo registration
+├── app.json                      # Expo config
+├── eas.json                      # EAS Build config
+├── tsconfig.json                 # TypeScript config
+├── package.json
+├── assets/                       # Icons and splash images
 │   ├── icon.png
 │   ├── splash-icon.png
-│   ├── favicon.png
-│   └── android-icon-*.png
+│   └── ...
+├── docs/
+│   └── ROADMAP.md                # Development roadmap
 └── src/
     ├── data/
-    │   └── mockData.ts        # Mock 数据
+    │   └── mockData.ts           # Mock data for all screens
     ├── navigation/
-    │   └── AppNavigator.tsx   # 路由导航配置
+    │   └── AppNavigator.tsx      # Tab + stack navigation setup
     ├── pages/
-    │   ├── HomePage.tsx       # 首页
-    │   ├── OrdersPage.tsx     # 订单列表
-    │   ├── PublishPage.tsx    # 发布任务
-    │   ├── MessagesPage.tsx   # 消息列表
-    │   ├── ProfilePage.tsx    # 个人中心
-    │   ├── OrderDetailPage.tsx# 订单详情
-    │   ├── ChatPage.tsx       # 聊天页面
-    │   ├── RunnerPage.tsx     # 跑腿员页面
-    │   ├── SearchPage.tsx     # 搜索页面
-    │   └── RatingPage.tsx     # 评价页面
+    │   ├── HomePage.tsx          # Task list with filters
+    │   ├── OrdersPage.tsx        # Order list with tabs
+    │   ├── PublishPage.tsx       # Task publish form
+    │   ├── MessagesPage.tsx      # Conversation list
+    │   ├── ProfilePage.tsx       # User profile
+    │   ├── OrderDetailPage.tsx   # Order detail & timeline
+    │   ├── ChatPage.tsx          # Chat messages
+    │   ├── RunnerPage.tsx        # Runner profile
+    │   ├── SearchPage.tsx        # Search with filters
+    │   └── RatingPage.tsx        # Star rating & review
     ├── stores/
-    │   └── useStore.ts        # Zustand 全局状态
+    │   └── useStore.ts           # Zustand global store
     ├── types/
-    │   └── index.ts           # TypeScript 类型定义
+    │   └── index.ts              # TypeScript interfaces
     └── utils/
-        └── index.ts           # 工具函数
+        └── index.ts              # Formatting helpers
 ```
+
+## Roadmap
+
+See [docs/ROADMAP.md](docs/ROADMAP.md) for the full development plan.
+
+**Next up:**
+1. Backend API (Node.js + Express + Prisma + PostgreSQL)
+2. User authentication (JWT)
+3. Connect frontend to real API
+4. Real order flow
+
+## Contributing
+
+Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+## Security
+
+See [SECURITY.md](SECURITY.md) for reporting vulnerabilities.
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for release history.
 
 ## License
 
