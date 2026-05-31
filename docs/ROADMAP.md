@@ -2,61 +2,71 @@
 
 This document outlines the planned development roadmap for Campus Runner.
 
-> ⚠️ Items are planned, not completed. Check the [Changelog](../CHANGELOG.md) for what's already shipped.
+> Items are planned, not completed. Check the [Changelog](../CHANGELOG.md) for what's shipped.
 
-## Phase 1: Frontend Template ✅ (v0.1.0 — Current)
+## Phase 1: Frontend Template ✅ (v0.1.0)
 
 - [x] Expo React Native project setup
-- [x] Bottom tab + stack navigation
-- [x] 10 screen pages with mock data
-- [x] Zustand state management
-- [x] TypeScript with strict mode
+- [x] Bottom tab + stack navigation (10 screens)
+- [x] Zustand state management with mock data
+- [x] TypeScript strict mode
 - [x] Open-source repository structure
 
-## Phase 2: Backend & Authentication (v0.2.0)
+## Phase 2: Backend Starter ✅ (v0.2.0)
 
-- [ ] Node.js + Express backend server
-- [ ] PostgreSQL database with Prisma ORM
-- [ ] User registration and login (JWT auth)
-- [ ] RESTful API for tasks and users
-- [ ] Connect frontend to real API
-- [ ] Environment variable configuration
+- [x] Express + TypeScript server
+- [x] Prisma ORM with SQLite (dev)
+- [x] User model and auth (register/login/JWT)
+- [x] Task model with full CRUD API
+- [x] Zod input validation
+- [x] Seed script with demo data
+- [x] Frontend API client with mock/API mode switch
+- [x] CI with type-check for frontend + backend
 
-## Phase 3: Core Features (v0.3.0)
+## Phase 3: Connect Frontend to Backend (v0.3.0)
 
-- [ ] Real task publishing and acceptance flow
-- [ ] Order status state machine (pending → accepted → picking → delivering → completed)
-- [ ] User profile management
-- [ ] Rating and review system
-- [ ] Search with backend filtering
+- [ ] Connect HomePage to `GET /api/tasks`
+- [ ] Connect TaskDetailPage to `GET /api/tasks/:id`
+- [ ] Connect PublishPage to `POST /api/tasks`
+- [ ] Connect auth screens to backend
+- [ ] Token storage with expo-secure-store
+- [ ] Loading and error states for API calls
 
-## Phase 4: Location & Maps (v0.4.0)
+## Phase 4: Real Order Flow (v0.4.0)
 
-- [ ] Real location integration with expo-location
+- [ ] Full order state machine (pending → accepted → picking → delivering → completed)
+- [ ] Order acceptance and runner assignment
+- [ ] Order confirmation by publisher
+- [ ] Order history and filtering
+- [ ] Review and rating system
+
+## Phase 5: Location & Maps (v0.5.0)
+
+- [ ] Real location with expo-location
 - [ ] Map view for nearby tasks
-- [ ] Distance-based task sorting
+- [ ] Distance-based sorting
 - [ ] Delivery route display
 
-## Phase 5: Real-time & Notifications (v0.5.0)
+## Phase 6: Real-time & Notifications (v0.6.0)
 
-- [ ] WebSocket-based real-time chat
+- [ ] WebSocket chat (Socket.io)
 - [ ] Push notifications (expo-notifications)
-- [ ] Order status change alerts
+- [ ] Order status alerts
 - [ ] New task notifications for runners
 
-## Phase 6: Quality & Polish (v0.6.0)
+## Phase 7: Quality & Polish (v0.7.0)
 
-- [ ] Unit tests with Jest
-- [ ] E2E tests with Detox
-- [ ] CI/CD pipeline improvements
-- [ ] Performance optimization
+- [ ] Unit tests (Jest)
+- [ ] API integration tests
+- [ ] E2E tests (Detox)
+- [ ] CI: run tests on PR
 - [ ] Accessibility improvements
 - [ ] Dark mode support
 
-## Phase 7: Production Release (v1.0.0)
+## Phase 8: Production (v1.0.0)
 
+- [ ] PostgreSQL for production
 - [ ] EAS Android build
-- [ ] App store submission preparation
 - [ ] Admin dashboard (web)
 - [ ] Content moderation
 - [ ] Privacy policy and terms of service
@@ -64,8 +74,4 @@ This document outlines the planned development roadmap for Campus Runner.
 
 ---
 
-## How to Contribute
-
-See [CONTRIBUTING.md](../CONTRIBUTING.md) for how to get involved.
-
-Pick any unchecked item above and open a PR!
+Pick any unchecked item and open a PR! See [CONTRIBUTING.md](../CONTRIBUTING.md).
